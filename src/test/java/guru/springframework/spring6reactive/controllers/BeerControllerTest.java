@@ -45,8 +45,13 @@ class BeerControllerTest {
                 .expectStatus().isOk()
                 .expectHeader().valueEquals("Content-Type","application/json")
                 .expectBody(BeerDTO.class);
+    }
 
-
+    @Test
+    void getBeerByIdNotFound() {
+        webTestClient.get().uri(BeerController.BEER_PATH_ID,999)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
@@ -60,6 +65,17 @@ class BeerControllerTest {
     }
 
     @Test
+    void createNewBeerValidationError() {
+        beer.setBeerName("");
+        webTestClient.post().uri(BeerController.BEER_PATH)
+                .body(Mono.just(beer), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+
+    @Test
     void updateBeer() {
         webTestClient.put()
                 .uri(BeerController.BEER_PATH_ID, 1)
@@ -69,11 +85,39 @@ class BeerControllerTest {
     }
 
     @Test
+    void updateBeerNotFound() {
+        webTestClient.put()
+                .uri(BeerController.BEER_PATH_ID, 999)
+                .body(Mono.just(beer), BeerDTO.class)
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void updateBeerValidationError() {
+        beer.setBeerName("");
+        webTestClient.put()
+                .uri(BeerController.BEER_PATH_ID, 1)
+                .body(Mono.just(beer), BeerDTO.class)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
     void deleteBeer() {
         webTestClient.delete()
                 .uri(BeerController.BEER_PATH_ID, 1)
                 .exchange()
                 .expectStatus()
                 .isNoContent();
+    }
+
+    @Test
+    void deleteBeerNotFound() {
+        webTestClient.delete()
+                .uri(BeerController.BEER_PATH_ID, 999)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }

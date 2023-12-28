@@ -25,8 +25,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Mono<CustomerDTO> getById(Integer beerId) {
-        return customerRepository.findById(beerId).map(customerMapper::customerToCustomerDto);
+    public Mono<CustomerDTO> getById(Integer customerId) {
+        return customerRepository.findById(customerId).map(customerMapper::customerToCustomerDto);
     }
 
     @Override
